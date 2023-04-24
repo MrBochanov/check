@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: helloworld
+  template:
+    metadata:
+      labels:
+        project: helloworld
+    spec:
+      containers:
+        - name: helloworld
+          image: testcontainers/helloworld
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld
+spec:
+  selector:
+    project: helloworld
+  ports:
+    - name: default
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helloworld
+spec:
+  rules:
+    - host: "sim2.test"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: helloworld
+                port:
+                  number: 8080

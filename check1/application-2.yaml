@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-on-port-80
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      #project: helloworld
+      test: helloworld-on-port-80
+  template:
+    metadata:
+      labels:
+        #project: helloworld
+        test: helloworld-on-port-80
+    spec:
+      containers:
+        - name: helloworld
+          image: olliefr/docker-gs-ping
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld-on-port-80
+spec:
+  selector:
+    test: helloworld-on-port-80
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helloworld-on-port-80
+spec:
+  rules:
+    - host: "sim2-port-80.test"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: helloworld-on-port-80
+                port:
+                  number: 8080
