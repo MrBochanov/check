@@ -15,7 +15,7 @@ spec:
         test: helloworld-on-port-80
     spec:
       containers:
-        - name: helloworld
+        - name: helloworld-on-port-80
           image: olliefr/docker-gs-ping
           ports:
             - containerPort: 8080
